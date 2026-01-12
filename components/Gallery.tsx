@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { GeneratedImage } from '../types';
-import { Download, Maximize2, X } from 'lucide-react';
+import { Download, Maximize2, X, Loader2, Package } from 'lucide-react';
 import { Button } from './Button';
+import JSZip from 'jszip';
 
 interface GalleryProps {
   images: GeneratedImage[];
@@ -10,6 +11,7 @@ interface GalleryProps {
 
 export const Gallery: React.FC<GalleryProps> = ({ images, onReset }) => {
   const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
+  const [isZipping, setIsZipping] = useState(false);
 
   const handleDownload = async (url: string, filename: string) => {
     const link = document.createElement('a');
@@ -20,10 +22,42 @@ export const Gallery: React.FC<GalleryProps> = ({ images, onReset }) => {
     document.body.removeChild(link);
   };
 
-  const handleDownloadAll = () => {
-    images.forEach(img => {
-      handleDownload(img.url, `${img.label.toLowerCase().replace(/\s+/g, '_')}.png`);
-    });
+  const handleDownloadAll = async () => {
+    if (isZipping) return;
+    setIsZipping(true);
+
+    try {
+      const zip = new JSZip();
+      const folderName = `lumiere_set_${new Date().toISOString().slice(0, 10)}`;
+      const folder = zip.folder(folderName);
+
+      images.forEach((img) => {
+        // img.url is "data:image/png;base64,..."
+        // We need to strip the prefix to get the raw base64 data for JSZip
+        const base64Data = img.url.split(',')[1];
+        if (base64Data && folder) {
+            const cleanLabel = img.label.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+            const filename = `${cleanLabel}.png`;
+            folder.file(filename, base64Data, { base64: true });
+        }
+      });
+
+      const content = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(content);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${folderName}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to generate zip", error);
+      alert("Failed to generate zip file. Please try downloading images individually.");
+    } finally {
+      setIsZipping(false);
+    }
   };
 
   return (
@@ -37,9 +71,18 @@ export const Gallery: React.FC<GalleryProps> = ({ images, onReset }) => {
           <Button variant="outline" onClick={onReset}>
             New Shoot
           </Button>
-          <Button onClick={handleDownloadAll}>
-            <Download className="w-4 h-4 mr-2" />
-            Download All
+          <Button onClick={handleDownloadAll} disabled={isZipping}>
+            {isZipping ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Zipping...
+              </>
+            ) : (
+              <>
+                <Package className="w-4 h-4 mr-2" />
+                Download Zip
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -62,12 +105,14 @@ export const Gallery: React.FC<GalleryProps> = ({ images, onReset }) => {
                 <button 
                   onClick={() => setSelectedImage(img)}
                   className="p-2 bg-white/10 backdrop-blur-md rounded-lg hover:bg-white/20 text-white transition-colors"
+                  title="View Fullscreen"
                 >
                   <Maximize2 className="w-4 h-4" />
                 </button>
                 <button 
                   onClick={() => handleDownload(img.url, `${img.label}.png`)}
                   className="p-2 bg-white text-black rounded-lg hover:bg-zinc-200 transition-colors"
+                  title="Download Image"
                 >
                   <Download className="w-4 h-4" />
                 </button>
