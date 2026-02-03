@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Upload, Image as ImageIcon, AlertCircle, X, Plus, Shirt, Check, Sparkles, Moon, Camera, Grip, Zap, Box, LayoutTemplate, Coffee, Trees, Building2, Armchair, Wine, Building, Sofa, ShieldCheck, Layers, Star, Palette } from 'lucide-react';
+import { Upload, Image as ImageIcon, AlertCircle, X, Plus, Shirt, Check, Sparkles, Moon, Camera, Grip, Zap, Box, LayoutTemplate, Coffee, Trees, Building2, Armchair, Wine, Building, Sofa, ShieldCheck, Layers, Star, Palette, Heart } from 'lucide-react';
 import { Button } from './Button';
 import { ProductType, PoseStyle, BackgroundStyle, PartyBackgroundType, FabricEmphasisType } from '../types';
 import { PRODUCT_PRESETS } from '../constants';
@@ -37,6 +37,7 @@ const BACKGROUND_OPTIONS: { id: BackgroundStyle; label: string; desc: string; ic
   { id: 'STUDIO_WHITE', label: 'Studio White', desc: 'High-key pure white. Crisp.', icon: LayoutTemplate },
   { id: 'STUDIO_BEIGE', label: 'Warm Beige', desc: 'Minimalist latte tones. Soft.', icon: Coffee },
   { id: 'STUDIO_COLORS', label: 'Color Pop', desc: 'Vibrant, high-saturation creative studio.', icon: Palette },
+  { id: 'STUDIO_VALENTINE', label: 'Valentine Studio', desc: 'Romantic pinks, soft hearts, seasonal.', icon: Heart },
   { id: 'OUTDOOR_NATURE', label: 'Outdoor', desc: 'Blurred park/garden. Natural light.', icon: Trees },
   { id: 'URBAN_STREET', label: 'Street (Day)', desc: 'City vibes, concrete, daylight.', icon: Building2 },
   { id: 'STREET_STYLE', label: 'Street Fashion', desc: 'Trendy, textured walls, modern urban.', icon: Zap },
@@ -262,7 +263,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onImagesReady }) => {
         
         {/* Standard Backgrounds - Only show if NOT Urban Night (or user can switch back) */}
         {selectedStyle !== 'URBAN_NIGHT' ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3 animate-in fade-in duration-300">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3 animate-in fade-in duration-300">
             {BACKGROUND_OPTIONS.map((opt) => {
               const Icon = opt.icon;
               const isSelected = selectedBackground === opt.id;

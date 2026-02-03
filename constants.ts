@@ -23,6 +23,7 @@ export const BACKGROUND_STYLES: Record<BackgroundStyle, string> = {
   STUDIO_WHITE: "BACKGROUND: Pure High-Key White (#FFFFFF). Infinite white background, no visible corners. Bright commercial lighting. LIGHTING: High-key studio lighting.",
   STUDIO_BEIGE: "BACKGROUND: Warm Minimalist Beige. Soft latte/cream tones (#F5F5DC). Organic, warm lighting, elegant vibe. LIGHTING: Warm softbox lighting.",
   STUDIO_COLORS: "BACKGROUND: Vibrant Color Studio. High-saturation solid color background (Electric Blue, Gen-Z Purple, or Bold Orange). Pop-art aesthetic. LIGHTING: Creative RGB gel lighting, strong contrast, high-energy fashion vibe.",
+  STUDIO_VALENTINE: "BACKGROUND: Valentine's Studio. Soft romantic pink and rose tones (#FFC0CB to #FF69B4). Subtle hearts or floral hints in background bokeh. Dreamy, loving atmosphere. LIGHTING: Soft, flattering, warm pink/rose lighting. Seasonal campaign look.",
   OUTDOOR_NATURE: "BACKGROUND: Blurred Outdoor Nature. Park or garden environment with soft bokeh. Natural sunlight. LIGHTING: Natural daylight, golden hour.",
   URBAN_STREET: "BACKGROUND: City Street. Blurred urban texture, concrete/brick. Daylight city vibe. LIGHTING: Natural outdoor lighting, slight contrast.",
   LUXURY_INTERIOR: "BACKGROUND: Luxury Interior. High-end architectural space, soft warm indoor lighting, elegant furniture in background (blurred). LIGHTING: Ambient interior lighting.",
@@ -139,8 +140,13 @@ export const PRODUCT_PRESETS: Record<ProductType, PoseConfig[]> = {
     },
     {
       id: 'top_2',
-      label: 'Mid-Shot (Waist Up)',
-      promptDescription: 'Front Top-Focused View: CROP: Upper body only (Top of head to waist/hips). FOCUS: Neckline, shoulders, and front fit. clear visibility of the top.'
+      label: 'Waist-Up Portrait',
+      promptDescription: 'Front Top-Focused View: CROP: Upper body only (Top of head to waist/hips). FOCUS: Neckline, shoulders, and front fit. Clear visibility of the top.'
+    },
+    {
+      id: 'top_closeup',
+      label: 'Front Close-up',
+      promptDescription: 'Detailed Chest Shot: CROP: Chin to Chest/Torso. FOCUS: Neckline construction, collar details, button plackets, print clarity, and fabric texture near the face.'
     },
     {
       id: 'top_3',
@@ -153,9 +159,9 @@ export const PRODUCT_PRESETS: Record<ProductType, PoseConfig[]> = {
       promptDescription: 'Right Angle Top-Focused: CROP: Upper body only. ROTATION: Body turned 45 degrees right. FOCUS: Fabric fall and side silhouette.'
     },
     {
-      id: 'top_5',
-      label: 'Extreme Close-Up',
-      promptDescription: 'Extreme Close-Up: CROP: Neck to Chest area. FOCUS: Stitching, fabric texture, rib/knit details, and print quality.'
+      id: 'top_side',
+      label: 'Side Profile',
+      promptDescription: 'Side Profile View: CROP: Upper body. ROTATION: Body turned 90 degrees sideways. FOCUS: Sleeve length, armhole fit, side seam details, and silhouette.'
     },
     {
       id: 'top_6',
@@ -163,9 +169,9 @@ export const PRODUCT_PRESETS: Record<ProductType, PoseConfig[]> = {
       promptDescription: 'Back Top-Focused View: CROP: Upper body back. FOCUS: Upper back details, neck back, zipper, or seams.'
     },
     {
-      id: 'top_7',
-      label: 'Editorial Pose',
-      promptDescription: 'Fashion Pose Top-Focused: CROP: Waist up. ACTION: Hand on waist or soft arm movement. FOCUS: Editorial look for the top.'
+      id: 'top_action',
+      label: 'Dynamic Action Pose',
+      promptDescription: 'Dynamic Movement Shot: ACTION: Model walking, turning, or moving arms naturally. CROP: Waist up or 3/4 body. FOCUS: Fabric movement, drape, creases in motion, and natural fit.'
     }
   ],
   DRESSES: [
