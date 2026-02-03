@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { UploadZone } from './components/UploadZone';
 import { Gallery } from './components/Gallery';
 import { HistoryView } from './components/HistoryView';
 import { Button } from './components/Button';
-import { AppState, GeneratedImage, GenerationProgress, HistoryItem, ProductType, PoseStyle, BackgroundStyle, PartyBackgroundType, FabricEmphasisType } from './types';
+import { AppState, GeneratedImage, GenerationProgress, HistoryItem, ProductType, PoseStyle, BackgroundStyle, PartyBackgroundType, FabricEmphasisType, ModelTier } from './types';
 import { generatePhotoshoot } from './services/geminiService';
 import { Loader2, KeyRound } from 'lucide-react';
 
-// IndexedDB configuration for robust storage of high-res base64 images
+// IndexedDB configuration
 const DB_NAME = 'LumiereStudioDB';
 const STORE_NAME = 'history';
-const DB_VERSION = 2; // Incremented version to handle referenceImages array
+const DB_VERSION = 2;
 
 const openDB = (): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
@@ -21,7 +21,6 @@ const openDB = (): Promise<IDBDatabase> => {
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         db.createObjectStore(STORE_NAME, { keyPath: 'id' });
       }
-      // Migration logic if needed could go here
     };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
@@ -35,11 +34,15 @@ const App: React.FC = () => {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [progress, setProgress] = useState<GenerationProgress>({ total: 0, completed: 0, currentTask: '' });
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  
+  // New State for Tier Selection
+  const [selectedTier, setSelectedTier] = useState<ModelTier>('FREE');
 
   // Initial Check for API Key & Load History
   useEffect(() => {
     const init = async () => {
       // 1. Check API Key Status
+      // We rely on window.aistudio to manage key state.
       const win = window as any;
       if (win.aistudio && await win.aistudio.hasSelectedApiKey()) {
         setState(AppState.UPLOAD);
@@ -55,11 +58,10 @@ const App: React.FC = () => {
         const request = store.getAll();
         request.onsuccess = () => {
           const raw = request.result as any[];
-          // Backward compatibility for single referenceImage history
           const migrated = raw.map(item => ({
             ...item,
             referenceImages: item.referenceImages || (item.referenceImage ? [item.referenceImage] : []),
-            productType: item.productType || 'TOPS', // Default for old items
+            productType: item.productType || 'TOPS',
             poseStyle: item.poseStyle || 'COMMERCIAL',
             backgroundStyle: item.backgroundStyle || 'STUDIO_GREY',
             partyBackground: item.partyBackground || undefined,
@@ -87,7 +89,7 @@ const App: React.FC = () => {
         setErrorMsg("Failed to select API key. Please try again.");
       }
     } else {
-      // Fallback for dev environments
+      // Fallback for non-compliant environments (development only)
       setState(AppState.UPLOAD);
     }
   };
@@ -117,7 +119,8 @@ const App: React.FC = () => {
           setProgress({ completed, total, currentTask: task });
         },
         partyBackground,
-        fabricEmphasis
+        fabricEmphasis,
+        selectedTier // Pass the selected tier
       );
       
       if (results.length === 0) {
@@ -136,7 +139,6 @@ const App: React.FC = () => {
         results: results
       };
 
-      // Save to IndexedDB
       const db = await openDB();
       const transaction = db.transaction(STORE_NAME, 'readwrite');
       transaction.objectStore(STORE_NAME).add(newItem);
@@ -185,6 +187,8 @@ const App: React.FC = () => {
         onViewHistory={handleToggleHistory} 
         onGoHome={handleReset}
         hasHistory={history.length > 0}
+        selectedTier={selectedTier}
+        onToggleTier={setSelectedTier}
       />
 
       <main className="max-w-7xl mx-auto px-4 py-12 md:py-20">
@@ -202,7 +206,7 @@ const App: React.FC = () => {
             </div>
             <div className="space-y-2">
               <h2 className="text-3xl font-bold tracking-tight text-white uppercase italic">Access Required</h2>
-              <p className="text-zinc-400">To use Lumière high-fidelity Gemini 3 Pro models, please select a billing-enabled API key.</p>
+              <p className="text-zinc-400">To use Lumière high-fidelity Gemini models, please select a billing-enabled API key.</p>
             </div>
             <div className="space-y-4">
               <Button onClick={handleSelectKey} fullWidth>Select API Key</Button>

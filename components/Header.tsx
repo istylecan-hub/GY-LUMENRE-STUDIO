@@ -1,13 +1,22 @@
 import React from 'react';
-import { Camera, Zap, Clock } from 'lucide-react';
+import { Camera, Zap, Clock, Rocket } from 'lucide-react';
+import { ModelTier } from '../types';
 
 interface HeaderProps {
   onViewHistory: () => void;
   onGoHome: () => void;
   hasHistory: boolean;
+  selectedTier: ModelTier;
+  onToggleTier: (tier: ModelTier) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onViewHistory, onGoHome, hasHistory }) => {
+export const Header: React.FC<HeaderProps> = ({ 
+  onViewHistory, 
+  onGoHome, 
+  hasHistory,
+  selectedTier,
+  onToggleTier
+}) => {
   return (
     <header className="w-full border-b border-zinc-800 bg-zinc-950/50 backdrop-blur-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -33,10 +42,29 @@ export const Header: React.FC<HeaderProps> = ({ onViewHistory, onGoHome, hasHist
               <span className="hidden sm:inline">History</span>
             </button>
           )}
-          <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-medium text-zinc-400">
-            <Zap className="w-3 h-3 text-yellow-500" />
-            <span>Gemini 3 Pro</span>
-          </div>
+          
+          <button 
+            onClick={() => onToggleTier(selectedTier === 'PRO' ? 'FREE' : 'PRO')}
+            className={`
+              flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300 text-xs font-bold uppercase tracking-wide
+              ${selectedTier === 'PRO' 
+                ? 'bg-yellow-900/30 border-yellow-700/50 text-yellow-500 hover:bg-yellow-900/50 shadow-[0_0_15px_rgba(234,179,8,0.2)]' 
+                : 'bg-emerald-900/30 border-emerald-700/50 text-emerald-400 hover:bg-emerald-900/50 shadow-[0_0_15px_rgba(52,211,153,0.2)]'}
+            `}
+            title={`Switch to ${selectedTier === 'PRO' ? 'Free' : 'Pro'} Model`}
+          >
+            {selectedTier === 'PRO' ? (
+              <>
+                <Zap className="w-3 h-3 fill-current" />
+                <span>⚡ Gemini 3 Pro (Paid)</span>
+              </>
+            ) : (
+              <>
+                <Rocket className="w-3 h-3" />
+                <span>🚀 Flash 2.5 (Free)</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
     </header>

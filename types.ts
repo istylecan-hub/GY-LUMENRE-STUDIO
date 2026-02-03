@@ -3,6 +3,7 @@ export type PoseStyle = 'COMMERCIAL' | 'EDITORIAL' | 'CASUAL' | 'GLAMOROUS' | 'U
 export type BackgroundStyle = 'STUDIO_GREY' | 'STUDIO_WHITE' | 'STUDIO_BEIGE' | 'OUTDOOR_NATURE' | 'URBAN_STREET' | 'LUXURY_INTERIOR' | 'URBAN_NIGHT' | 'STREET_STYLE' | 'STUDIO_COLORS' | 'STUDIO_VALENTINE';
 export type PartyBackgroundType = 'CLUB_LOUNGE' | 'ROOFTOP_PARTY' | 'PENTHOUSE_PARTY' | 'MINIMAL_PARTY' | 'URBAN_NIGHT_CITY';
 export type FabricEmphasisType = 'TEXTURE_BOOST' | 'SPARKLE_HIGHLIGHT';
+export type ModelTier = 'FREE' | 'PRO';
 
 export interface GeneratedImage {
   id: string;

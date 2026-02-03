@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { PRODUCT_PRESETS, SYSTEM_INSTRUCTION, POSE_STYLES, BACKGROUND_STYLES, PARTY_BACKGROUNDS, FABRIC_EMPHASIS_STYLES } from '../constants';
-import { PoseConfig, GeneratedImage, ProductType, PoseStyle, BackgroundStyle, PartyBackgroundType, FabricEmphasisType } from '../types';
+import { GeneratedImage, ProductType, PoseStyle, BackgroundStyle, PartyBackgroundType, FabricEmphasisType, ModelTier } from '../types';
 
 export const blobToBase64 = (blob: Blob): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -20,7 +20,6 @@ const compressImage = async (base64: string, quality: number = 0.7): Promise<str
       let width = img.width;
       let height = img.height;
       
-      // Resize if too large to save space while maintaining decent reference quality
       const MAX_DIM = 1280; 
       if (width > MAX_DIM || height > MAX_DIM) {
           const ratio = Math.min(MAX_DIM / width, MAX_DIM / height);
@@ -32,18 +31,17 @@ const compressImage = async (base64: string, quality: number = 0.7): Promise<str
       canvas.height = height;
       const ctx = canvas.getContext('2d');
       if (!ctx) {
-        resolve(base64); // Fallback
+        resolve(base64); 
         return;
       }
       ctx.drawImage(img, 0, 0, width, height);
       resolve(canvas.toDataURL('image/jpeg', quality));
     };
-    img.onerror = (e) => resolve(base64); // Fallback on error
+    img.onerror = (e) => resolve(base64); 
     img.src = base64;
   });
 };
 
-// Retry helper for robust API calls
 const retryOperation = async <T>(
   operation: () => Promise<T>,
   retries: number = 5,
@@ -52,15 +50,9 @@ const retryOperation = async <T>(
   try {
     return await operation();
   } catch (error: any) {
-    // Parse various error structures
-    // SDK might return plain error, or nested { error: { code, message } }
     const status = error.status || error.response?.status || error.error?.code || error.error?.status;
     const message = error.message || error.error?.message || JSON.stringify(error);
     
-    // Identify retryable conditions
-    // 503: Service Unavailable / Overloaded
-    // 429: Too Many Requests
-    // 500: Internal Server Error
     const isOverloaded = 
         status === 503 || 
         (typeof message === 'string' && (
@@ -83,12 +75,10 @@ const retryOperation = async <T>(
       );
 
     if (shouldRetry) {
-      // If overloaded, use a slightly longer initial backoff
       const waitTime = isOverloaded ? Math.max(delay, 5000) : delay;
       console.warn(`API Error (${status}: ${message}). Retrying in ${waitTime}ms... (${retries} attempts left)`);
       
       await new Promise(resolve => setTimeout(resolve, waitTime));
-      // Exponential backoff with 1.5 multiplier
       return retryOperation(operation, retries - 1, waitTime * 1.5);
     }
     throw error;
@@ -103,15 +93,30 @@ export const generatePhotoshoot = async (
   selectedPoseIds: string[],
   onProgress: (completed: number, total: number, task: string) => void,
   partyBackground?: PartyBackgroundType,
-  fabricEmphasis?: FabricEmphasisType
+  fabricEmphasis?: FabricEmphasisType,
+  tier: ModelTier = 'FREE'
 ): Promise<GeneratedImage[]> => {
-  // Switched to Pro model for high fidelity
-  const ACTIVE_MODEL = 'gemini-3-pro-image-preview';
+  
+  // 2. Select Model & Key
+  // Use process.env.API_KEY exclusively as per guidelines.
+  // Model selection depends on tier.
+  let activeModel = 'gemini-2.5-flash-image';
+
+  if (tier === 'PRO') {
+    activeModel = 'gemini-3-pro-image-preview'; 
+    console.log(`[Lumière] Using High-Fidelity Model (Pro): ${activeModel}`);
+  } else {
+    // gemini-2.5-flash-image is the default for general image tasks
+    console.log(`[Lumière] Using Standard Model (Free): ${activeModel}`);
+  }
+
+  // 3. Initialize Client
+  // API Key must be obtained exclusively from process.env.API_KEY
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
   const allPoses = PRODUCT_PRESETS[productType];
   const stylePrompt = POSE_STYLES[poseStyle];
   
-  // Logic: If Party Background is selected (only avail in Urban Night), use it.
-  // Otherwise use the standard background style.
   let backgroundPrompt = BACKGROUND_STYLES[backgroundStyle];
   if (poseStyle === 'URBAN_NIGHT' && partyBackground) {
       backgroundPrompt = PARTY_BACKGROUNDS[partyBackground];
@@ -123,7 +128,6 @@ export const generatePhotoshoot = async (
     throw new Error(`Invalid product type: ${productType}`);
   }
 
-  // Filter Poses
   const poses = allPoses.filter(p => selectedPoseIds.includes(p.id));
   
   if (poses.length === 0) {
@@ -132,17 +136,7 @@ export const generatePhotoshoot = async (
 
   const results: GeneratedImage[] = [];
   let completedCount = 0;
-  
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    throw new Error("API Key not found in environment.");
-  }
 
-  const ai = new GoogleGenAI({ apiKey });
-
-  // Optimization: Check total payload size. 
-  // API inline data limit is usually around 20MB. Base64 is ~1.33x binary size.
-  // 15MB base64 string length is a safe threshold.
   const SAFE_PAYLOAD_LIMIT = 15 * 1024 * 1024;
   const currentTotalSize = referenceImagesBase64.reduce((acc, str) => acc + str.length, 0);
 
@@ -153,9 +147,7 @@ export const generatePhotoshoot = async (
     processedImages = await Promise.all(referenceImagesBase64.map(img => compressImage(img)));
   }
 
-  // Prepare reference parts
   const referenceParts = processedImages.map(base64 => {
-    // Extract mime type if available, default to jpeg
     const mimeMatch = base64.match(/^data:(image\/[a-zA-Z]+);base64,/);
     const mimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
     const cleanBase64 = base64.split(',')[1] || base64;
@@ -168,13 +160,14 @@ export const generatePhotoshoot = async (
     };
   });
 
+  // 4. Loop with Tier Specific Logic
   for (const pose of poses) {
      onProgress(completedCount, poses.length, `Generating ${pose.label}...`);
 
      try {
        const response = await retryOperation(async () => {
          return await ai.models.generateContent({
-           model: ACTIVE_MODEL,
+           model: activeModel,
            contents: {
              parts: [
                {
@@ -186,7 +179,8 @@ export const generatePhotoshoot = async (
            config: {
              imageConfig: {
                 aspectRatio: "3:4",
-                imageSize: "2K" // Pro model supports high resolution
+                // Flash model might not support "2K" param, strictly only use it for Pro
+                ...(tier === 'PRO' ? { imageSize: "2K" } : {}) 
              }
            }
          });
@@ -207,7 +201,6 @@ export const generatePhotoshoot = async (
        }
      } catch (e: any) {
        console.error(`Error generating ${pose.label}:`, e);
-       // We log the error but continue to the next pose so the whole batch doesn't fail
      }
 
      completedCount++;
