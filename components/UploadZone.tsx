@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Upload, Image as ImageIcon, AlertCircle, X, Plus, Shirt, Check, Sparkles, Moon, Camera, Grip, Zap, Box, LayoutTemplate, Coffee, Trees, Building2, Armchair, Wine, Building, Sofa, ShieldCheck, Layers, Star, Palette, Heart } from 'lucide-react';
+import { Upload, Image as ImageIcon, AlertCircle, X, Plus, Shirt, Check, Sparkles, Moon, Camera, Grip, Zap, Box, LayoutTemplate, Coffee, Trees, Building2, Armchair, Wine, Building, Sofa, ShieldCheck, Layers, Star, Palette, Heart, Landmark, Paintbrush, Flower2, Leaf } from 'lucide-react';
 import { Button } from './Button';
-import { ProductType, PoseStyle, BackgroundStyle, PartyBackgroundType, FabricEmphasisType } from '../types';
+import { ProductType, PoseStyle, BackgroundStyle, PartyBackgroundType, FabricEmphasisType, LightingStyle, AspectRatio } from '../types';
 import { PRODUCT_PRESETS } from '../constants';
 
 interface UploadZoneProps {
@@ -12,7 +12,9 @@ interface UploadZoneProps {
     backgroundStyle: BackgroundStyle, 
     selectedPoseIds: string[],
     partyBackground?: PartyBackgroundType,
-    fabricEmphasis?: FabricEmphasisType
+    fabricEmphasis?: FabricEmphasisType,
+    lightingStyle?: LightingStyle,
+    aspectRatio?: AspectRatio
   ) => void;
 }
 
@@ -21,6 +23,8 @@ const PRODUCT_OPTIONS: { id: ProductType; label: string; desc: string }[] = [
   { id: 'DRESSES', label: 'Dresses', desc: 'Full body flow, silhouette, and length.' },
   { id: 'COORDS', label: 'Co-ord Sets', desc: 'Matching sets with top and bottom focus.' },
   { id: 'KURTI', label: 'Kurti / Tunic', desc: 'Ethnic wear details, side cuts, and yokes.' },
+  { id: 'ACCESSORIES', label: 'Accessories', desc: 'Bags, jewelry, hats, etc.' },
+  { id: 'FOOTWEAR', label: 'Footwear', desc: 'Shoes, sneakers, heels, etc.' },
 ];
 
 const STYLE_OPTIONS: { id: PoseStyle; label: string; desc: string; icon: React.ElementType }[] = [
@@ -30,6 +34,14 @@ const STYLE_OPTIONS: { id: PoseStyle; label: string; desc: string; icon: React.E
   { id: 'STREET_STYLE', label: 'Street Style', desc: 'Gen-Z, cool, dynamic, urban vibes.', icon: Zap },
   { id: 'GLAMOROUS', label: 'Glamorous', desc: 'Luxury, confident, captivating elegance.', icon: Sparkles },
   { id: 'URBAN_NIGHT', label: 'Urban Night', desc: 'Flash-lit rooftop editorial. (Dresses/Tops/Coords)', icon: Moon },
+  { id: 'FLAT_LAY', label: 'Flat Lay', desc: 'Top-down view, neatly styled on a surface.', icon: LayoutTemplate },
+  { id: 'EDITORIAL_HIGH_FASHION', label: 'Avant-Garde', desc: 'Intense, otherworldly, highly stylized.', icon: Sparkles },
+  { id: 'VINTAGE_RETRO', label: 'Vintage/Retro', desc: 'Nostalgic, classic film camera vibe.', icon: Camera },
+  { id: 'ATHLETIC_SPORTY', label: 'Athletic', desc: 'Dynamic, active, energy-focused.', icon: Zap },
+  { id: 'MINIMALIST_ZEN', label: 'Minimalist Zen', desc: 'Calm, poised, clean lines.', icon: Leaf },
+  { id: 'CANDID_DOCUMENTARY', label: 'Candid', desc: 'Unposed, authentic, mid-action.', icon: ImageIcon },
+  { id: 'FIERCE_BOSS', label: 'Fierce Boss', desc: 'Powerful, commanding power poses.', icon: Sparkles },
+  { id: 'ROMANTIC_DREAMY', label: 'Romantic', desc: 'Soft, flowing, ethereal.', icon: Heart },
 ];
 
 const BACKGROUND_OPTIONS: { id: BackgroundStyle; label: string; desc: string; icon: React.ElementType }[] = [
@@ -43,6 +55,30 @@ const BACKGROUND_OPTIONS: { id: BackgroundStyle; label: string; desc: string; ic
   { id: 'STREET_STYLE', label: 'Street Fashion', desc: 'Trendy, textured walls, modern urban.', icon: Zap },
   { id: 'URBAN_NIGHT', label: 'Urban Night', desc: 'Neon lights, city bokeh, cinematic night.', icon: Moon },
   { id: 'LUXURY_INTERIOR', label: 'Luxury', desc: 'High-end interior ambiance.', icon: Armchair },
+  { id: 'MINIMALIST_COLOR', label: 'Minimalist Color', desc: 'Solid pastel or muted color block.', icon: Palette },
+  { id: 'CYBERPUNK_CITY', label: 'Cyberpunk', desc: 'Neon glowing signs, dark alleys.', icon: Zap },
+  { id: 'HAVELI_HERITAGE', label: 'Haveli Heritage', desc: 'Traditional Indian architecture, arches, jharokha.', icon: Landmark },
+  { id: 'STUDIO_PASTEL_PINK', label: 'Pastel Pink', desc: 'Soft blush pink, feminine tone.', icon: Palette },
+  { id: 'STUDIO_SAGE_GREEN', label: 'Sage Green', desc: 'Earthy muted green, calm organic feel.', icon: Leaf },
+  { id: 'STUDIO_LAVENDER', label: 'Lavender', desc: 'Soft purple, trendy Gen-Z vibe.', icon: Sparkles },
+  { id: 'TEXTURED_CANVAS', label: 'Textured Canvas', desc: 'Painted canvas, artistic depth.', icon: Paintbrush },
+  { id: 'JAIPUR_PINK_CITY', label: 'Jaipur Pink City', desc: 'Iconic pink walls, Rajasthani charm.', icon: Building },
+  { id: 'MUGHAL_GARDEN', label: 'Mughal Garden', desc: 'Lush symmetrical garden, royal elegance.', icon: Flower2 },
+];
+
+const LIGHTING_OPTIONS: { id: LightingStyle; label: string; desc: string; icon: React.ElementType }[] = [
+  { id: 'SOFT_STUDIO', label: 'Soft Studio', desc: 'Even illumination, minimal shadows.', icon: Sparkles },
+  { id: 'HARSH_SUNLIGHT', label: 'Harsh Sunlight', desc: 'Direct, high contrast, sharp shadows.', icon: Zap },
+  { id: 'NEON_CYBERPUNK', label: 'Neon Cyberpunk', desc: 'Vibrant pink/blue/purple neon.', icon: Moon },
+  { id: 'CINEMATIC_MOODY', label: 'Cinematic Moody', desc: 'Deep shadows, dramatic highlights.', icon: Camera },
+];
+
+const ASPECT_RATIO_OPTIONS: { id: AspectRatio; label: string; desc: string; icon: React.ElementType }[] = [
+  { id: '1:1', label: '1:1 Square', desc: 'Instagram standard.', icon: Box },
+  { id: '3:4', label: '3:4 Portrait', desc: 'Standard fashion crop.', icon: LayoutTemplate },
+  { id: '4:3', label: '4:3 Landscape', desc: 'Standard landscape.', icon: LayoutTemplate },
+  { id: '9:16', label: '9:16 Story', desc: 'Reels, TikTok, Stories.', icon: LayoutTemplate },
+  { id: '16:9', label: '16:9 Widescreen', desc: 'Cinematic, YouTube.', icon: LayoutTemplate },
 ];
 
 const PARTY_OPTIONS: { id: PartyBackgroundType; label: string; desc: string; icon: React.ElementType }[] = [
@@ -67,6 +103,8 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onImagesReady }) => {
   const [selectedBackground, setSelectedBackground] = useState<BackgroundStyle>('STUDIO_GREY');
   const [selectedPartyBackground, setSelectedPartyBackground] = useState<PartyBackgroundType | undefined>(undefined);
   const [selectedFabricEmphasis, setSelectedFabricEmphasis] = useState<FabricEmphasisType | undefined>(undefined);
+  const [selectedLightingStyle, setSelectedLightingStyle] = useState<LightingStyle>('SOFT_STUDIO');
+  const [selectedAspectRatio, setSelectedAspectRatio] = useState<AspectRatio>('3:4');
   const [selectedPoseIds, setSelectedPoseIds] = useState<string[]>([]);
   
   const [isDragging, setIsDragging] = useState(false);
@@ -169,7 +207,9 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onImagesReady }) => {
         selectedBackground, 
         selectedPoseIds,
         selectedPartyBackground,
-        selectedFabricEmphasis
+        selectedFabricEmphasis,
+        selectedLightingStyle,
+        selectedAspectRatio
       );
     } else if (selectedPoseIds.length === 0) {
       setError("Please select at least one shot angle.");
@@ -375,9 +415,76 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onImagesReady }) => {
         </div>
       </div>
 
-      {/* Step 5: Shot Selection */}
+      {/* Step 5: Lighting Selection */}
       <div className="space-y-4">
-        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest text-center">5. Select Camera Angles</h3>
+        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest text-center">5. Select Lighting</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          {LIGHTING_OPTIONS.map((opt) => {
+            const Icon = opt.icon;
+            const isSelected = selectedLightingStyle === opt.id;
+            return (
+              <button
+                key={opt.id}
+                onClick={() => setSelectedLightingStyle(opt.id)}
+                className={`
+                  relative p-4 rounded-xl border text-left transition-all duration-200 group
+                  ${isSelected 
+                    ? 'bg-zinc-100 border-zinc-100 text-black shadow-[0_0_15px_rgba(255,255,255,0.1)]' 
+                    : 'bg-zinc-900/30 border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:bg-zinc-900'}
+                `}
+              >
+                {isSelected && (
+                  <div className="absolute top-2 right-2">
+                    <Check className="w-4 h-4 text-black" />
+                  </div>
+                )}
+                <div className="mb-2">
+                  <Icon className={`w-5 h-5 ${isSelected ? 'text-black' : 'text-zinc-600 group-hover:text-zinc-400'}`} />
+                </div>
+                <div className="font-bold text-sm mb-1">{opt.label}</div>
+                <div className={`text-[10px] leading-tight ${isSelected ? 'text-zinc-600' : 'text-zinc-500'}`}>
+                  {opt.desc}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Step 6: Aspect Ratio Selection */}
+      <div className="space-y-4">
+        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest text-center">6. Select Aspect Ratio</h3>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          {ASPECT_RATIO_OPTIONS.map((opt) => {
+            const Icon = opt.icon;
+            const isSelected = selectedAspectRatio === opt.id;
+            return (
+              <button
+                key={opt.id}
+                onClick={() => setSelectedAspectRatio(opt.id)}
+                className={`
+                  relative p-4 rounded-xl border text-center transition-all duration-200 group flex flex-col items-center
+                  ${isSelected 
+                    ? 'bg-zinc-100 border-zinc-100 text-black shadow-[0_0_15px_rgba(255,255,255,0.1)]' 
+                    : 'bg-zinc-900/30 border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:bg-zinc-900'}
+                `}
+              >
+                <div className="mb-2">
+                  <Icon className={`w-5 h-5 ${isSelected ? 'text-black' : 'text-zinc-600 group-hover:text-zinc-400'}`} />
+                </div>
+                <div className="font-bold text-sm mb-1">{opt.label}</div>
+                <div className={`text-[10px] leading-tight ${isSelected ? 'text-zinc-600' : 'text-zinc-500'}`}>
+                  {opt.desc}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Step 7: Shot Selection */}
+      <div className="space-y-4">
+        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest text-center">7. Select Camera Angles</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 bg-zinc-900/30 p-4 rounded-2xl border border-zinc-800">
           {PRODUCT_PRESETS[selectedType].map((pose) => (
              <button
@@ -410,9 +517,9 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onImagesReady }) => {
         </div>
       </div>
 
-      {/* Step 6: Upload */}
+      {/* Step 8: Upload */}
       <div className="space-y-4">
-        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest text-center">6. Upload References</h3>
+        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest text-center">8. Upload References</h3>
         <div 
           className={`
             relative border-2 border-dashed rounded-2xl p-10 text-center transition-all duration-300

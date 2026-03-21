@@ -4,7 +4,7 @@ import { UploadZone } from './components/UploadZone';
 import { Gallery } from './components/Gallery';
 import { HistoryView } from './components/HistoryView';
 import { Button } from './components/Button';
-import { AppState, GeneratedImage, GenerationProgress, HistoryItem, ProductType, PoseStyle, BackgroundStyle, PartyBackgroundType, FabricEmphasisType, ModelTier } from './types';
+import { AppState, GeneratedImage, GenerationProgress, HistoryItem, ProductType, PoseStyle, BackgroundStyle, PartyBackgroundType, FabricEmphasisType, ModelTier, LightingStyle, AspectRatio } from './types';
 import { generatePhotoshoot } from './services/geminiService';
 import { Loader2, KeyRound } from 'lucide-react';
 
@@ -12,35 +12,6 @@ import { Loader2, KeyRound } from 'lucide-react';
 const DB_NAME = 'LumiereStudioDB';
 const STORE_NAME = 'history';
 const DB_VERSION = 2;
-
-// --- API KEY CONFIGURATION ---
-// Helper to safely access env vars whether in Vite or other environments
-const getEnvVar = (key: string): string => {
-  try {
-    // Check for Vite's import.meta.env
-    // @ts-ignore
-    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key]) {
-      // @ts-ignore
-      return import.meta.env[key];
-    }
-    // Check for standard process.env (often polyfilled by bundlers)
-    if (typeof process !== 'undefined' && process.env && process.env[key]) {
-      return process.env[key];
-    }
-  } catch (e) {
-    // Ignore errors during access
-  }
-  return '';
-};
-
-const PAID_KEY = getEnvVar('VITE_GEMINI_API_KEY_PAID');
-const FREE_KEYS = [
-  getEnvVar('VITE_GEMINI_KEY_FREE_1'),
-  getEnvVar('VITE_GEMINI_KEY_FREE_2'),
-  getEnvVar('VITE_GEMINI_KEY_FREE_3'),
-  getEnvVar('VITE_GEMINI_KEY_FREE_4'),
-  getEnvVar('VITE_GEMINI_KEY_FREE_5'),
-].filter((k): k is string => !!k && k.length > 0);
 
 const openDB = (): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
@@ -64,25 +35,18 @@ const App: React.FC = () => {
   const [progress, setProgress] = useState<GenerationProgress>({ total: 0, completed: 0, currentTask: '' });
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   
-  // Tier Selection & Key Rotation State
+  // Tier Selection State
   const [selectedTier, setSelectedTier] = useState<ModelTier>('FREE');
-  const [currentFreeKeyIndex, setCurrentFreeKeyIndex] = useState(0);
 
   // Initial Check for API Key & Load History
   useEffect(() => {
     const init = async () => {
       // 1. Check API Key Status
-      // Priority: Hardcoded Env Keys -> AI Studio Selection
-      if (PAID_KEY || FREE_KEYS.length > 0) {
-        console.log(`[System] Env Keys Detected. Paid: ${!!PAID_KEY}, Free Pool: ${FREE_KEYS.length}`);
+      const win = window as any;
+      if (win.aistudio && await win.aistudio.hasSelectedApiKey()) {
         setState(AppState.UPLOAD);
       } else {
-        const win = window as any;
-        if (win.aistudio && await win.aistudio.hasSelectedApiKey()) {
-          setState(AppState.UPLOAD);
-        } else {
-          setState(AppState.CHECKING_KEY);
-        }
+        setState(AppState.CHECKING_KEY);
       }
 
       // 2. Load History
@@ -136,49 +100,14 @@ const App: React.FC = () => {
     backgroundStyle: BackgroundStyle, 
     selectedPoseIds: string[],
     partyBackground?: PartyBackgroundType,
-    fabricEmphasis?: FabricEmphasisType
+    fabricEmphasis?: FabricEmphasisType,
+    lightingStyle?: LightingStyle,
+    aspectRatio?: AspectRatio
   ) => {
     setReferenceImages(base64Array);
     setState(AppState.GENERATING);
     setErrorMsg(null);
     setGeneratedImages([]);
-
-    // --- KEY ROTATION & INJECTION LOGIC ---
-    let activeKey = '';
-    
-    if (selectedTier === 'PRO') {
-      activeKey = PAID_KEY || '';
-      if (!activeKey && FREE_KEYS.length > 0) {
-         console.warn("[System] Paid key missing, falling back to free pool.");
-         activeKey = FREE_KEYS[0];
-      }
-    } else {
-      // FREE TIER
-      if (FREE_KEYS.length > 0) {
-        activeKey = FREE_KEYS[currentFreeKeyIndex];
-        console.log(`[Load Balancer] Rotating Key Pool. Using Key Index: ${currentFreeKeyIndex}`);
-        
-        // Prepare index for NEXT request (Round Robin)
-        setCurrentFreeKeyIndex(prev => (prev + 1) % FREE_KEYS.length);
-      } else if (PAID_KEY) {
-        activeKey = PAID_KEY;
-        console.warn("[System] Free keys missing, falling back to paid key.");
-      }
-    }
-
-    // Inject Key into process.env for geminiService
-    // We modify the global process object (or create it) so the service can access it
-    // standard 'process' might not exist in browser, so we handle it carefully.
-    if (typeof process === 'undefined') {
-      (window as any).process = { env: {} };
-    } else if (!process.env) {
-      (process as any).env = {};
-    }
-    
-    // If we have an active key from env, use it. 
-    if (activeKey) {
-      process.env.API_KEY = activeKey;
-    }
 
     try {
       const results = await generatePhotoshoot(
@@ -192,7 +121,9 @@ const App: React.FC = () => {
         },
         partyBackground,
         fabricEmphasis,
-        selectedTier
+        selectedTier,
+        lightingStyle,
+        aspectRatio
       );
       
       if (results.length === 0) {
@@ -208,6 +139,8 @@ const App: React.FC = () => {
         backgroundStyle: backgroundStyle,
         partyBackground: partyBackground,
         fabricEmphasis: fabricEmphasis,
+        lightingStyle: lightingStyle,
+        aspectRatio: aspectRatio,
         results: results
       };
 

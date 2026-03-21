@@ -74,6 +74,18 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ items, onSelectItem, o
                     <span>{item.poseStyle}</span>
                   </div>
                 )}
+                {item.lightingStyle && (
+                   <div className="flex items-center gap-1.5 px-2 py-1 bg-amber-500/20 backdrop-blur-md rounded border border-amber-500/30 text-[10px] font-bold text-amber-200 uppercase tracking-wider">
+                    <Sparkles className="w-3 h-3" />
+                    <span>{item.lightingStyle.replace('_', ' ')}</span>
+                  </div>
+                )}
+                {item.aspectRatio && (
+                   <div className="flex items-center gap-1.5 px-2 py-1 bg-emerald-500/20 backdrop-blur-md rounded border border-emerald-500/30 text-[10px] font-bold text-emerald-200 uppercase tracking-wider">
+                    <Layers className="w-3 h-3" />
+                    <span>{item.aspectRatio}</span>
+                  </div>
+                )}
               </div>
 
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />

@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
-import { PRODUCT_PRESETS, SYSTEM_INSTRUCTION, POSE_STYLES, BACKGROUND_STYLES, PARTY_BACKGROUNDS, FABRIC_EMPHASIS_STYLES } from '../constants';
-import { GeneratedImage, ProductType, PoseStyle, BackgroundStyle, PartyBackgroundType, FabricEmphasisType, ModelTier } from '../types';
+import { PRODUCT_PRESETS, SYSTEM_INSTRUCTION, POSE_STYLES, BACKGROUND_STYLES, PARTY_BACKGROUNDS, FABRIC_EMPHASIS_STYLES, LIGHTING_STYLES } from '../constants';
+import { GeneratedImage, ProductType, PoseStyle, BackgroundStyle, PartyBackgroundType, FabricEmphasisType, ModelTier, LightingStyle, AspectRatio } from '../types';
 
 export const blobToBase64 = (blob: Blob): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -94,19 +94,21 @@ export const generatePhotoshoot = async (
   onProgress: (completed: number, total: number, task: string) => void,
   partyBackground?: PartyBackgroundType,
   fabricEmphasis?: FabricEmphasisType,
-  tier: ModelTier = 'FREE'
+  tier: ModelTier = 'FREE',
+  lightingStyle?: LightingStyle,
+  aspectRatio: AspectRatio = '3:4'
 ): Promise<GeneratedImage[]> => {
   
   // 2. Select Model & Key
   // Use process.env.API_KEY exclusively as per guidelines.
   // Model selection depends on tier.
-  let activeModel = 'gemini-2.5-flash-image';
+  let activeModel = 'gemini-3.1-flash-image-preview';
 
   if (tier === 'PRO') {
-    activeModel = 'gemini-3-pro-image-preview'; 
+    activeModel = 'gemini-3.1-pro-preview'; 
     console.log(`[Lumière] Using High-Fidelity Model (Pro): ${activeModel}`);
   } else {
-    // gemini-2.5-flash-image is the default for general image tasks
+    // gemini-3.1-flash-image-preview is the default for general image tasks
     console.log(`[Lumière] Using Standard Model (Free): ${activeModel}`);
   }
 
@@ -123,6 +125,7 @@ export const generatePhotoshoot = async (
   }
   
   const fabricPrompt = fabricEmphasis ? FABRIC_EMPHASIS_STYLES[fabricEmphasis] : "";
+  const lightingPrompt = lightingStyle ? LIGHTING_STYLES[lightingStyle] : "";
 
   if (!allPoses) {
     throw new Error(`Invalid product type: ${productType}`);
@@ -171,14 +174,14 @@ export const generatePhotoshoot = async (
            contents: {
              parts: [
                {
-                 text: `${SYSTEM_INSTRUCTION}\n\n${backgroundPrompt}\n\n${stylePrompt}\n\n${fabricPrompt}\n\nGENERATE THIS SPECIFIC SHOT:\n${pose.promptDescription}\n\nUse ALL provided reference images to ensure the person and clothing are IDENTICAL.`
+                 text: `${SYSTEM_INSTRUCTION}\n\n${backgroundPrompt}\n\n${stylePrompt}\n\n${lightingPrompt}\n\n${fabricPrompt}\n\nGENERATE THIS SPECIFIC SHOT:\n${pose.promptDescription}\n\nUse ALL provided reference images to ensure the person and clothing are IDENTICAL.`
                },
                ...referenceParts
              ]
            },
            config: {
              imageConfig: {
-                aspectRatio: "3:4",
+                aspectRatio: aspectRatio,
                 // Flash model might not support "2K" param, strictly only use it for Pro
                 ...(tier === 'PRO' ? { imageSize: "2K" } : {}) 
              }

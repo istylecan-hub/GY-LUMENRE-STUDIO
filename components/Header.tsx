@@ -56,12 +56,12 @@ export const Header: React.FC<HeaderProps> = ({
             {selectedTier === 'PRO' ? (
               <>
                 <Zap className="w-3 h-3 fill-current" />
-                <span>⚡ Gemini 3 Pro (Paid)</span>
+                <span>⚡ Gemini 3.1 Pro (Paid)</span>
               </>
             ) : (
               <>
                 <Rocket className="w-3 h-3" />
-                <span>🚀 Flash 2.5 (Free)</span>
+                <span>🚀 Flash 3.1 (Free)</span>
               </>
             )}
           </button>

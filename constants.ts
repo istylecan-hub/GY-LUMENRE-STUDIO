@@ -1,4 +1,4 @@
-import { PoseConfig, ProductType, PoseStyle, BackgroundStyle, PartyBackgroundType, FabricEmphasisType } from './types';
+import { PoseConfig, ProductType, PoseStyle, BackgroundStyle, PartyBackgroundType, FabricEmphasisType, LightingStyle } from './types';
 
 export const SYSTEM_INSTRUCTION = `
 You are a high-precision fashion photoshoot generation AI.
@@ -28,7 +28,16 @@ export const BACKGROUND_STYLES: Record<BackgroundStyle, string> = {
   URBAN_STREET: "BACKGROUND: City Street. Blurred urban texture, concrete/brick. Daylight city vibe. LIGHTING: Natural outdoor lighting, slight contrast.",
   LUXURY_INTERIOR: "BACKGROUND: Luxury Interior. High-end architectural space, soft warm indoor lighting, elegant furniture in background (blurred). LIGHTING: Ambient interior lighting.",
   URBAN_NIGHT: "BACKGROUND: Urban Night. City lights, bokeh, neon signs, wet asphalt. Cinematic night atmosphere. LIGHTING: Mixed street lighting and neon, moody contrast.",
-  STREET_STYLE: "BACKGROUND: Trendy Street Fashion. Textured concrete walls, graffiti hints, or modern urban architecture. Blurred depth. LIGHTING: Natural daylight, cool shadows, fashion editorial look."
+  STREET_STYLE: "BACKGROUND: Trendy Street Fashion. Textured concrete walls, graffiti hints, or modern urban architecture. Blurred depth. LIGHTING: Natural daylight, cool shadows, fashion editorial look.",
+  MINIMALIST_COLOR: "BACKGROUND: Minimalist Color Block. Solid pastel or muted color background with sharp, clean shadows. Modern, abstract, and highly stylized.",
+  CYBERPUNK_CITY: "BACKGROUND: Cyberpunk Cityscape. Futuristic urban environment, glowing neon signs, holographic elements, dark alleys, rain-slicked streets.",
+  HAVELI_HERITAGE: "BACKGROUND: ornate carved sandstone arches, jharokha window frames, traditional Rajasthani haveli courtyard, warm golden stone textures, intricate Indian architectural details, ambient natural light filtering through carved lattice screens, heritage palace backdrop.",
+  STUDIO_PASTEL_PINK: "BACKGROUND: soft pastel pink studio backdrop, blush rose background, gentle feminine tone, even soft lighting, clean millennial pink studio.",
+  STUDIO_SAGE_GREEN: "BACKGROUND: muted sage green studio background, earthy organic tone, calm natural green backdrop, soft even studio lighting.",
+  STUDIO_LAVENDER: "BACKGROUND: soft lavender purple studio background, digital lavender tone, dreamy pastel purple backdrop, gentle studio lighting.",
+  TEXTURED_CANVAS: "BACKGROUND: hand-painted textured canvas backdrop, artistic brush stroke texture, mottled studio background, painterly fine art photography backdrop.",
+  JAIPUR_PINK_CITY: "BACKGROUND: Jaipur pink sandstone walls, iconic Pink City architecture, terracotta rose-colored building facade, ornate Rajasthani window details, warm dusty pink heritage walls.",
+  MUGHAL_GARDEN: "BACKGROUND: symmetrical Mughal garden pathway, lush green hedges and fountains, royal Indian garden with water channels, Mughal architecture arches in background, paradise garden aesthetic."
 };
 
 export const PARTY_BACKGROUNDS: Record<PartyBackgroundType, string> = {
@@ -80,12 +89,27 @@ export const FABRIC_EMPHASIS_STYLES: Record<FabricEmphasisType, string> = {
 • Best for: Satins, Sequins, Metallic fabrics.`
 };
 
+export const LIGHTING_STYLES: Record<LightingStyle, string> = {
+  SOFT_STUDIO: "LIGHTING: Soft, diffused studio lighting. Flattering, even illumination with minimal harsh shadows. Perfect for showing fabric details.",
+  HARSH_SUNLIGHT: "LIGHTING: Direct, harsh sunlight. High contrast, sharp shadows. Creates a bold, summery, or dramatic outdoor feel.",
+  NEON_CYBERPUNK: "LIGHTING: Vibrant neon lighting (pink, blue, purple). High contrast, moody, futuristic atmosphere.",
+  CINEMATIC_MOODY: "LIGHTING: Cinematic, moody lighting. Deep shadows, dramatic highlights, often with a single strong directional light source."
+};
+
 export const POSE_STYLES: Record<PoseStyle, string> = {
   COMMERCIAL: "MOOD: Commercial E-commerce. Expression: Pleasant, approachable, soft smile or neutral-positive. Body Language: Standard catalog poses, clear visibility of garment, upright posture.",
   EDITORIAL: "MOOD: High Fashion Editorial. Expression: Serious, confident, intense gaze, mouth slightly open or neutral. Body Language: Angular, dynamic, artistic, asymmetrical posing. Hands usage is more expressive.",
   CASUAL: "MOOD: Relaxed / Lifestyle. Expression: Natural, candid, soft, maybe looking away slightly. Body Language: Fluid, comfortable, 'caught in the moment', soft movement, less rigid than studio poses.",
   GLAMOROUS: "MOOD: High-End Glamour / Red Carpet. Expression: Captivating, confident, magnetic gaze, slight pout or radiant smile. Body Language: Statuesque, elegant curves, dramatic but sophisticated, hand on hip or near face, emphasizing luxury.",
   STREET_STYLE: "MOOD: Gen-Z Street Style. Expression: Confident, cool, nonchalant, maybe a slight smirk. Body Language: Casual, dynamic, urban-inspired movements, interaction with environment, relaxed but stylish.",
+  FLAT_LAY: "MOOD: Flat Lay Photography. Perspective: Top-down view (bird's-eye). The product is laid flat on a surface, styled neatly. No human model visible.",
+  EDITORIAL_HIGH_FASHION: "MOOD: Avant-Garde High Fashion. Expression: Intense, otherworldly, dramatic. Body Language: Extreme angles, exaggerated poses, highly stylized and artistic.",
+  VINTAGE_RETRO: "MOOD: Vintage Retro. Expression: Nostalgic, classic, slightly dramatic. Body Language: Old Hollywood or 90s editorial poses, graceful, timeless.",
+  ATHLETIC_SPORTY: "MOOD: Athletic & Sporty. Expression: Focused, energetic, determined. Body Language: Dynamic movement, stretching, active stances, showcasing flexibility and strength.",
+  MINIMALIST_ZEN: "MOOD: Minimalist Zen. Expression: Serene, calm, mindful. Body Language: Poised, still, clean lines, subtle and deliberate movements.",
+  CANDID_DOCUMENTARY: "MOOD: Candid Documentary. Expression: Authentic, unposed, natural reactions. Body Language: Mid-action, walking, looking away, completely natural as if unaware of the camera.",
+  FIERCE_BOSS: "MOOD: Fierce & Powerful. Expression: Commanding, sharp, intimidatingly confident. Body Language: Power poses, wide stances, sharp angles, taking up space.",
+  ROMANTIC_DREAMY: "MOOD: Romantic & Dreamy. Expression: Soft, longing, gentle. Body Language: Flowing movements, delicate hand placements, ethereal and light.",
   URBAN_NIGHT: `STYLE ADD-ON: Urban Night Glam (Flash Editorial)
 
 Apply a night-time urban photoshoot aesthetic.
@@ -283,6 +307,45 @@ export const PRODUCT_PRESETS: Record<ProductType, PoseConfig[]> = {
       id: 'kurti_7',
       label: 'Graceful Pose',
       promptDescription: 'Full Body Graceful Pose: Elegant standing posture suitable for ethnic wear.'
+    }
+  ],
+  ACCESSORIES: [
+    {
+      id: 'acc_1',
+      label: 'Close-up Detail',
+      promptDescription: 'Extreme Close-Up: Focus entirely on the accessory (bag, jewelry, hat). Show material texture and hardware.'
+    },
+    {
+      id: 'acc_2',
+      label: 'Styled on Model',
+      promptDescription: 'Lifestyle Shot: Accessory worn by a model. Focus is on how the accessory complements an outfit.'
+    },
+    {
+      id: 'acc_3',
+      label: 'Flat Lay',
+      promptDescription: 'Top-Down Flat Lay: Accessory arranged neatly on a surface. Artistic composition.'
+    }
+  ],
+  FOOTWEAR: [
+    {
+      id: 'shoe_1',
+      label: 'Side Profile',
+      promptDescription: 'Shoe Side Profile: Clear view of the shoe from the side, showing heel, sole, and silhouette.'
+    },
+    {
+      id: 'shoe_2',
+      label: 'On-Foot Angle',
+      promptDescription: 'On-Foot Shot: Shoes worn by a model, angled slightly to show the toe box and side.'
+    },
+    {
+      id: 'shoe_3',
+      label: 'Top-Down View',
+      promptDescription: 'Top-Down View: Looking down at the shoes, showing the vamp and toe design.'
+    },
+    {
+      id: 'shoe_4',
+      label: 'Dynamic Step',
+      promptDescription: 'Action Shot: Model taking a step, showing the shoe in motion and sole flexibility.'
     }
   ]
 };
