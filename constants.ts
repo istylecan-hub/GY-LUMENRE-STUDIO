@@ -37,7 +37,9 @@ export const BACKGROUND_STYLES: Record<BackgroundStyle, string> = {
   STUDIO_LAVENDER: "BACKGROUND: soft lavender purple studio background, digital lavender tone, dreamy pastel purple backdrop, gentle studio lighting.",
   TEXTURED_CANVAS: "BACKGROUND: hand-painted textured canvas backdrop, artistic brush stroke texture, mottled studio background, painterly fine art photography backdrop.",
   JAIPUR_PINK_CITY: "BACKGROUND: Jaipur pink sandstone walls, iconic Pink City architecture, terracotta rose-colored building facade, ornate Rajasthani window details, warm dusty pink heritage walls.",
-  MUGHAL_GARDEN: "BACKGROUND: symmetrical Mughal garden pathway, lush green hedges and fountains, royal Indian garden with water channels, Mughal architecture arches in background, paradise garden aesthetic."
+  MUGHAL_GARDEN: "BACKGROUND: symmetrical Mughal garden pathway, lush green hedges and fountains, royal Indian garden with water channels, Mughal architecture arches in background, paradise garden aesthetic.",
+  FASHION_RUNWAY: "BACKGROUND: High fashion runway show, sleek glossy catwalk floor, bright spotlights on the model, blurred audience in the dark background, professional fashion week lighting.",
+  VARANASI_GHATS: "BACKGROUND: ancient stone steps of Varanasi Ghats, Ganges river bank, traditional Indian temple architecture in background, morning mist, spiritual atmosphere, warm sunrise light, colorful boats on the water, weathered stone textures."
 };
 
 export const PARTY_BACKGROUNDS: Record<PartyBackgroundType, string> = {
@@ -110,6 +112,7 @@ export const POSE_STYLES: Record<PoseStyle, string> = {
   CANDID_DOCUMENTARY: "MOOD: Candid Documentary. Expression: Authentic, unposed, natural reactions. Body Language: Mid-action, walking, looking away, completely natural as if unaware of the camera.",
   FIERCE_BOSS: "MOOD: Fierce & Powerful. Expression: Commanding, sharp, intimidatingly confident. Body Language: Power poses, wide stances, sharp angles, taking up space.",
   ROMANTIC_DREAMY: "MOOD: Romantic & Dreamy. Expression: Soft, longing, gentle. Body Language: Flowing movements, delicate hand placements, ethereal and light.",
+  RUNWAY_WALK: "MOOD: High Fashion Runway. Expression: Fierce, focused, looking straight ahead, neutral or slight pout. Body Language: Mid-stride walking on a runway, dynamic movement, confident posture, arms swinging naturally, showcasing the garment's flow.",
   URBAN_NIGHT: `STYLE ADD-ON: Urban Night Glam (Flash Editorial)
 
 Apply a night-time urban photoshoot aesthetic.
@@ -193,6 +196,21 @@ export const PRODUCT_PRESETS: Record<ProductType, PoseConfig[]> = {
       promptDescription: 'Back Top-Focused View: CROP: Upper body back. FOCUS: Upper back details, neck back, zipper, or seams.'
     },
     {
+      id: 'top_high_angle',
+      label: 'High Angle View',
+      promptDescription: 'High Angle Shot: CAMERA: High angle looking down. CROP: Waist up. FOCUS: Neckline, shoulders, and top surface of the garment.'
+    },
+    {
+      id: 'top_low_angle',
+      label: 'Low Angle Hero',
+      promptDescription: 'Low Angle Shot: CAMERA: Low angle looking up. CROP: Waist up. FOCUS: Dramatic silhouette, shoulder structure, and powerful presence.'
+    },
+    {
+      id: 'top_sleeve_detail',
+      label: 'Sleeve Detail',
+      promptDescription: 'Sleeve Close-up: CROP: Focused on one sleeve/arm. FOCUS: Cuff details, stitching, sleeve pattern, or unique arm features.'
+    },
+    {
       id: 'top_action',
       label: 'Dynamic Action Pose',
       promptDescription: 'Dynamic Movement Shot: ACTION: Model walking, turning, or moving arms naturally. CROP: Waist up or 3/4 body. FOCUS: Fabric movement, drape, creases in motion, and natural fit.'
@@ -223,6 +241,21 @@ export const PRODUCT_PRESETS: Record<ProductType, PoseConfig[]> = {
       id: 'dress_4',
       label: 'Full Body Back',
       promptDescription: 'Full Body Back View: Model turned away. Head to toe visible. FOCUS: Back design, zip, tie, or cut details.'
+    },
+    {
+      id: 'dress_sitting',
+      label: 'Sitting Pose',
+      promptDescription: 'Sitting View: Full body. Model sitting on a minimalist stool or floor. FOCUS: How the fabric drapes, pools, and folds in a seated position.'
+    },
+    {
+      id: 'dress_low_sweep',
+      label: 'Low Angle Sweep',
+      promptDescription: 'Low Angle Full Body: CAMERA: Low angle looking up. FOCUS: Hemline flow, dramatic length, and sweeping silhouette.'
+    },
+    {
+      id: 'dress_walking_away',
+      label: 'Walking Away',
+      promptDescription: 'Dynamic Back View: Full body. Model walking away from camera. FOCUS: Movement of the dress, back swing, and trailing hemline.'
     },
     {
       id: 'dress_macro_1',
@@ -262,6 +295,21 @@ export const PRODUCT_PRESETS: Record<ProductType, PoseConfig[]> = {
       promptDescription: 'Lower Body Focus: Focus specifically on the bottom piece (trousers/skirt). CROP: Waist down to knees/feet.'
     },
     {
+      id: 'coord_high_angle',
+      label: 'High Angle Set',
+      promptDescription: 'High Angle Full Body: CAMERA: Looking down from above. FOCUS: Pattern matching, overall set coordination, and top-down silhouette.'
+    },
+    {
+      id: 'coord_sitting',
+      label: 'Sitting in Set',
+      promptDescription: 'Seated Full Body: Model sitting comfortably. FOCUS: Fit and comfort of the set, fabric behavior when seated.'
+    },
+    {
+      id: 'coord_pocket',
+      label: 'Pocket Detail',
+      promptDescription: 'Pocket Close-up: CROP: Focused on the pocket area. FOCUS: Pocket construction, alignment with patterns, and stitching details.'
+    },
+    {
       id: 'coord_macro_1',
       label: 'Texture Extreme Macro',
       promptDescription: 'Extreme Macro Close-Up: Focused on fabric texture or intersection of top and bottom.'
@@ -294,6 +342,21 @@ export const PRODUCT_PRESETS: Record<ProductType, PoseConfig[]> = {
       promptDescription: 'Full Body Back View: Showing the back design.'
     },
     {
+      id: 'kurti_sitting',
+      label: 'Sitting Gracefully',
+      promptDescription: 'Traditional Seated Pose: Full body. Model sitting gracefully. FOCUS: Flare of the kurti, drape of the fabric, and bottom wear visibility.'
+    },
+    {
+      id: 'kurti_hem_detail',
+      label: 'Hemline Detail',
+      promptDescription: 'Hemline Close-up: CROP: Bottom edge of the kurti. FOCUS: Border work, embroidery, lace, or unique hem finishes.'
+    },
+    {
+      id: 'kurti_low_angle',
+      label: 'Low Angle Majesty',
+      promptDescription: 'Low Angle Full Body: CAMERA: Looking up. FOCUS: Royal silhouette, full length, and majestic presence of the ethnic attire.'
+    },
+    {
       id: 'kurti_5',
       label: 'Yoke Detail Close-Up',
       promptDescription: 'Close-Up Detail: CROP: Chest/Neck area. FOCUS: Embroidery, buttons, or yoke design details.'
@@ -321,6 +384,16 @@ export const PRODUCT_PRESETS: Record<ProductType, PoseConfig[]> = {
       promptDescription: 'Lifestyle Shot: Accessory worn by a model. Focus is on how the accessory complements an outfit.'
     },
     {
+      id: 'acc_mirror',
+      label: 'Mirror Reflection',
+      promptDescription: 'Creative Reflection: Accessory shown reflected in a mirror. FOCUS: Multiple perspectives and artistic depth.'
+    },
+    {
+      id: 'acc_handheld',
+      label: 'Hand-held Detail',
+      promptDescription: 'Interaction Shot: Model holding or interacting with the accessory. FOCUS: Scale, usability, and tactile feel.'
+    },
+    {
       id: 'acc_3',
       label: 'Flat Lay',
       promptDescription: 'Top-Down Flat Lay: Accessory arranged neatly on a surface. Artistic composition.'
@@ -336,6 +409,16 @@ export const PRODUCT_PRESETS: Record<ProductType, PoseConfig[]> = {
       id: 'shoe_2',
       label: 'On-Foot Angle',
       promptDescription: 'On-Foot Shot: Shoes worn by a model, angled slightly to show the toe box and side.'
+    },
+    {
+      id: 'shoe_45_front',
+      label: '45 Degree Front',
+      promptDescription: 'Front-Side Angle: 45 degree view from the front. FOCUS: Toe box, lacing/details, and side profile simultaneously.'
+    },
+    {
+      id: 'shoe_heel',
+      label: 'Back Heel Detail',
+      promptDescription: 'Rear View: Focused on the back of the shoe. FOCUS: Heel construction, pull tabs, and back branding.'
     },
     {
       id: 'shoe_3',

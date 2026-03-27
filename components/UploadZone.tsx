@@ -42,6 +42,7 @@ const STYLE_OPTIONS: { id: PoseStyle; label: string; desc: string; icon: React.E
   { id: 'CANDID_DOCUMENTARY', label: 'Candid', desc: 'Unposed, authentic, mid-action.', icon: ImageIcon },
   { id: 'FIERCE_BOSS', label: 'Fierce Boss', desc: 'Powerful, commanding power poses.', icon: Sparkles },
   { id: 'ROMANTIC_DREAMY', label: 'Romantic', desc: 'Soft, flowing, ethereal.', icon: Heart },
+  { id: 'RUNWAY_WALK', label: 'Runway Walk', desc: 'Mid-stride, fierce catwalk.', icon: Sparkles },
 ];
 
 const BACKGROUND_OPTIONS: { id: BackgroundStyle; label: string; desc: string; icon: React.ElementType }[] = [
@@ -64,6 +65,8 @@ const BACKGROUND_OPTIONS: { id: BackgroundStyle; label: string; desc: string; ic
   { id: 'TEXTURED_CANVAS', label: 'Textured Canvas', desc: 'Painted canvas, artistic depth.', icon: Paintbrush },
   { id: 'JAIPUR_PINK_CITY', label: 'Jaipur Pink City', desc: 'Iconic pink walls, Rajasthani charm.', icon: Building },
   { id: 'MUGHAL_GARDEN', label: 'Mughal Garden', desc: 'Lush symmetrical garden, royal elegance.', icon: Flower2 },
+  { id: 'FASHION_RUNWAY', label: 'Fashion Runway', desc: 'Catwalk, spotlights, blurred audience.', icon: Camera },
+  { id: 'VARANASI_GHATS', label: 'Varanasi Ghats', desc: 'Ancient stone steps, Ganges river, spiritual vibe.', icon: Landmark },
 ];
 
 const LIGHTING_OPTIONS: { id: LightingStyle; label: string; desc: string; icon: React.ElementType }[] = [
