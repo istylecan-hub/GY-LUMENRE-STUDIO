@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Upload, Image as ImageIcon, AlertCircle, X, Plus, Shirt, Check, Sparkles, Moon, Camera, Grip, Zap, Box, LayoutTemplate, Coffee, Trees, Building2, Armchair, Wine, Building, Sofa, ShieldCheck, Layers, Star, Palette, Heart, Landmark, Paintbrush, Flower2, Leaf } from 'lucide-react';
+import { Upload, Image as ImageIcon, AlertCircle, X, Plus, Shirt, Check, Sparkles, Moon, Camera, Grip, Zap, Box, LayoutTemplate, Coffee, Trees, Building2, Armchair, Wine, Building, Sofa, ShieldCheck, Layers, Star, Palette, Heart, Landmark, Paintbrush, Flower2, Leaf, Glasses, Watch, Book, Briefcase, Wand2 } from 'lucide-react';
 import { Button } from './Button';
-import { ProductType, PoseStyle, BackgroundStyle, PartyBackgroundType, FabricEmphasisType, LightingStyle, AspectRatio } from '../types';
+import { ProductType, PoseStyle, BackgroundStyle, PartyBackgroundType, FabricEmphasisType, LightingStyle, AspectRatio, PropStyle } from '../types';
 import { PRODUCT_PRESETS } from '../constants';
 
 interface UploadZoneProps {
@@ -14,7 +14,8 @@ interface UploadZoneProps {
     partyBackground?: PartyBackgroundType,
     fabricEmphasis?: FabricEmphasisType,
     lightingStyle?: LightingStyle,
-    aspectRatio?: AspectRatio
+    aspectRatio?: AspectRatio,
+    propStyle?: PropStyle
   ) => void;
 }
 
@@ -67,6 +68,7 @@ const BACKGROUND_OPTIONS: { id: BackgroundStyle; label: string; desc: string; ic
   { id: 'MUGHAL_GARDEN', label: 'Mughal Garden', desc: 'Lush symmetrical garden, royal elegance.', icon: Flower2 },
   { id: 'FASHION_RUNWAY', label: 'Fashion Runway', desc: 'Catwalk, spotlights, blurred audience.', icon: Camera },
   { id: 'VARANASI_GHATS', label: 'Varanasi Ghats', desc: 'Ancient stone steps, Ganges river, spiritual vibe.', icon: Landmark },
+  { id: 'KERALA_BACKWATERS', label: 'Kerala Backwaters', desc: 'Serene water, houseboats, lush palms.', icon: Trees },
 ];
 
 const LIGHTING_OPTIONS: { id: LightingStyle; label: string; desc: string; icon: React.ElementType }[] = [
@@ -97,6 +99,19 @@ const FABRIC_OPTIONS: { id: FabricEmphasisType; label: string; desc: string; ico
   { id: 'SPARKLE_HIGHLIGHT', label: 'Sparkle Highlight', desc: 'Shine & gloss (Best with Flash).', icon: Star },
 ];
 
+const PROP_OPTIONS: { id: PropStyle; label: string; desc: string; icon: React.ElementType }[] = [
+  { id: 'NONE', label: 'None', desc: 'No additional props.', icon: X },
+  { id: 'AI_AUTO', label: 'AI Auto', desc: 'AI selects the best props for you.', icon: Wand2 },
+  { id: 'CHAIR', label: 'Chair', desc: 'Sitting on or interacting with a chair.', icon: Armchair },
+  { id: 'HANDBAG', label: 'Handbag', desc: 'Holding a stylish handbag.', icon: Briefcase },
+  { id: 'SUNGLASSES', label: 'Sunglasses', desc: 'Wearing stylish sunglasses.', icon: Glasses },
+  { id: 'WATCH', label: 'Watch', desc: 'Wearing an elegant wristwatch.', icon: Watch },
+  { id: 'FLOWER', label: 'Flower', desc: 'Holding a delicate flower.', icon: Flower2 },
+  { id: 'PLANTS', label: 'Plants', desc: 'Lush green plants in the scene.', icon: Leaf },
+  { id: 'COFFEE_CUP', label: 'Coffee Cup', desc: 'Holding a chic coffee cup.', icon: Coffee },
+  { id: 'BOOKS', label: 'Books', desc: 'Holding or reading a book.', icon: Book },
+];
+
 const MAX_IMAGES = 10;
 
 export const UploadZone: React.FC<UploadZoneProps> = ({ onImagesReady }) => {
@@ -106,6 +121,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onImagesReady }) => {
   const [selectedBackground, setSelectedBackground] = useState<BackgroundStyle>('STUDIO_GREY');
   const [selectedPartyBackground, setSelectedPartyBackground] = useState<PartyBackgroundType | undefined>(undefined);
   const [selectedFabricEmphasis, setSelectedFabricEmphasis] = useState<FabricEmphasisType | undefined>(undefined);
+  const [selectedPropStyle, setSelectedPropStyle] = useState<PropStyle>('NONE');
   const [selectedLightingStyle, setSelectedLightingStyle] = useState<LightingStyle>('SOFT_STUDIO');
   const [selectedAspectRatio, setSelectedAspectRatio] = useState<AspectRatio>('3:4');
   const [selectedPoseIds, setSelectedPoseIds] = useState<string[]>([]);
@@ -212,7 +228,8 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onImagesReady }) => {
         selectedPartyBackground,
         selectedFabricEmphasis,
         selectedLightingStyle,
-        selectedAspectRatio
+        selectedAspectRatio,
+        selectedPropStyle
       );
     } else if (selectedPoseIds.length === 0) {
       setError("Please select at least one shot angle.");
@@ -418,9 +435,40 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onImagesReady }) => {
         </div>
       </div>
 
-      {/* Step 5: Lighting Selection */}
+      {/* Step 5: Prop Selection */}
       <div className="space-y-4">
-        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest text-center">5. Select Lighting</h3>
+        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest text-center">5. Select Props (Optional)</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+          {PROP_OPTIONS.map((opt) => {
+            const Icon = opt.icon;
+            const isSelected = selectedPropStyle === opt.id;
+            return (
+              <button
+                key={opt.id}
+                onClick={() => setSelectedPropStyle(opt.id)}
+                className={`
+                  relative p-4 rounded-xl border text-center transition-all duration-200 group flex flex-col items-center
+                  ${isSelected 
+                    ? 'bg-zinc-100 border-zinc-100 text-black shadow-[0_0_15px_rgba(255,255,255,0.1)]' 
+                    : 'bg-zinc-900/30 border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:bg-zinc-900'}
+                `}
+              >
+                <div className="mb-2">
+                  <Icon className={`w-5 h-5 ${isSelected ? 'text-black' : 'text-zinc-600 group-hover:text-zinc-400'}`} />
+                </div>
+                <div className="font-bold text-sm mb-1">{opt.label}</div>
+                <div className={`text-[10px] leading-tight ${isSelected ? 'text-zinc-600' : 'text-zinc-500'}`}>
+                  {opt.desc}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Step 6: Lighting Selection */}
+      <div className="space-y-4">
+        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest text-center">6. Select Lighting</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
           {LIGHTING_OPTIONS.map((opt) => {
             const Icon = opt.icon;
@@ -454,9 +502,9 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onImagesReady }) => {
         </div>
       </div>
 
-      {/* Step 6: Aspect Ratio Selection */}
+      {/* Step 7: Aspect Ratio Selection */}
       <div className="space-y-4">
-        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest text-center">6. Select Aspect Ratio</h3>
+        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest text-center">7. Select Aspect Ratio</h3>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {ASPECT_RATIO_OPTIONS.map((opt) => {
             const Icon = opt.icon;
@@ -485,9 +533,9 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onImagesReady }) => {
         </div>
       </div>
 
-      {/* Step 7: Shot Selection */}
+      {/* Step 8: Shot Selection */}
       <div className="space-y-4">
-        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest text-center">7. Select Camera Angles</h3>
+        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest text-center">8. Select Camera Angles</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 bg-zinc-900/30 p-4 rounded-2xl border border-zinc-800">
           {PRODUCT_PRESETS[selectedType].map((pose) => (
              <button
@@ -520,9 +568,9 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onImagesReady }) => {
         </div>
       </div>
 
-      {/* Step 8: Upload */}
+      {/* Step 9: Upload */}
       <div className="space-y-4">
-        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest text-center">8. Upload References</h3>
+        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest text-center">9. Upload References</h3>
         <div 
           className={`
             relative border-2 border-dashed rounded-2xl p-10 text-center transition-all duration-300

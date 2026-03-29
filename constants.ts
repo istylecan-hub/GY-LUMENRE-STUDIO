@@ -39,7 +39,8 @@ export const BACKGROUND_STYLES: Record<BackgroundStyle, string> = {
   JAIPUR_PINK_CITY: "BACKGROUND: Jaipur pink sandstone walls, iconic Pink City architecture, terracotta rose-colored building facade, ornate Rajasthani window details, warm dusty pink heritage walls.",
   MUGHAL_GARDEN: "BACKGROUND: symmetrical Mughal garden pathway, lush green hedges and fountains, royal Indian garden with water channels, Mughal architecture arches in background, paradise garden aesthetic.",
   FASHION_RUNWAY: "BACKGROUND: High fashion runway show, sleek glossy catwalk floor, bright spotlights on the model, blurred audience in the dark background, professional fashion week lighting.",
-  VARANASI_GHATS: "BACKGROUND: ancient stone steps of Varanasi Ghats, Ganges river bank, traditional Indian temple architecture in background, morning mist, spiritual atmosphere, warm sunrise light, colorful boats on the water, weathered stone textures."
+  VARANASI_GHATS: "BACKGROUND: ancient stone steps of Varanasi Ghats, Ganges river bank, traditional Indian temple architecture in background, morning mist, spiritual atmosphere, warm sunrise light, colorful boats on the water, weathered stone textures.",
+  KERALA_BACKWATERS: "BACKGROUND: Serene Kerala backwaters, traditional wooden houseboat (kettuvallam) in the background, lush green palm trees, calm water reflections, warm tropical sunlight, vibrant South Indian natural beauty."
 };
 
 export const PARTY_BACKGROUNDS: Record<PartyBackgroundType, string> = {
@@ -96,6 +97,19 @@ export const LIGHTING_STYLES: Record<LightingStyle, string> = {
   HARSH_SUNLIGHT: "LIGHTING: Direct, harsh sunlight. High contrast, sharp shadows. Creates a bold, summery, or dramatic outdoor feel.",
   NEON_CYBERPUNK: "LIGHTING: Vibrant neon lighting (pink, blue, purple). High contrast, moody, futuristic atmosphere.",
   CINEMATIC_MOODY: "LIGHTING: Cinematic, moody lighting. Deep shadows, dramatic highlights, often with a single strong directional light source."
+};
+
+export const PROP_STYLES: Record<import('./types').PropStyle, string> = {
+  NONE: "",
+  AI_AUTO: "",
+  CHAIR: "PROPS: Model is interacting with or sitting on a stylish chair (e.g., modern minimalist, vintage armchair, or sleek stool).",
+  HANDBAG: "PROPS: Model is holding or wearing a fashionable handbag, complementing the outfit.",
+  SUNGLASSES: "PROPS: Model is wearing stylish sunglasses, adding an edgy or glamorous vibe.",
+  WATCH: "PROPS: Model is wearing an elegant or modern wristwatch, subtly highlighted in the pose.",
+  FLOWER: "PROPS: Model is holding a single delicate flower or a small bouquet, adding a soft, romantic, or artistic touch.",
+  PLANTS: "PROPS: Lush green plants or large monstera leaves are present in the scene, either in the background or interacting with the model.",
+  COFFEE_CUP: "PROPS: Model is holding a chic coffee cup or ceramic mug, creating a relaxed, lifestyle aesthetic.",
+  BOOKS: "PROPS: Model is holding or reading a book, or books are stacked nearby, adding an intellectual or editorial mood."
 };
 
 export const POSE_STYLES: Record<PoseStyle, string> = {
@@ -214,6 +228,21 @@ export const PRODUCT_PRESETS: Record<ProductType, PoseConfig[]> = {
       id: 'top_action',
       label: 'Dynamic Action Pose',
       promptDescription: 'Dynamic Movement Shot: ACTION: Model walking, turning, or moving arms naturally. CROP: Waist up or 3/4 body. FOCUS: Fabric movement, drape, creases in motion, and natural fit.'
+    },
+    {
+      id: 'top_dutch_angle',
+      label: 'Dutch Angle (Tilted)',
+      promptDescription: 'Dutch Angle Shot: CAMERA: Tilted/canted angle. CROP: Waist up. FOCUS: Dynamic, energetic, and edgy fashion perspective.'
+    },
+    {
+      id: 'top_over_shoulder',
+      label: 'Over-the-Shoulder',
+      promptDescription: 'Over-the-Shoulder View: CAMERA: Looking over the model\'s shoulder. FOCUS: Back details and side profile simultaneously.'
+    },
+    {
+      id: 'top_birds_eye',
+      label: 'Bird\'s-Eye View',
+      promptDescription: 'Bird\'s-Eye View: CAMERA: Top-down directly above the model. FOCUS: Shoulders, neckline, and top pattern from above.'
     }
   ],
   DRESSES: [
@@ -266,6 +295,21 @@ export const PRODUCT_PRESETS: Record<ProductType, PoseConfig[]> = {
       id: 'dress_6',
       label: 'Editorial Pose',
       promptDescription: 'Full Body Editorial Pose: Weight shift, crossed legs, or hand on hip. Stylish fashion posture.'
+    },
+    {
+      id: 'dress_dutch_angle',
+      label: 'Dutch Angle (Tilted)',
+      promptDescription: 'Dutch Angle Shot: CAMERA: Tilted/canted angle. FOCUS: Dramatic, avant-garde fashion perspective of the dress.'
+    },
+    {
+      id: 'dress_over_shoulder',
+      label: 'Over-the-Shoulder',
+      promptDescription: 'Over-the-Shoulder View: CAMERA: Looking over the model\'s shoulder. FOCUS: Back design, zip, and side flow of the dress.'
+    },
+    {
+      id: 'dress_birds_eye',
+      label: 'Bird\'s-Eye View',
+      promptDescription: 'Bird\'s-Eye View: CAMERA: Top-down directly above the model. FOCUS: Skirt flare, neckline, and overall dress pattern from above.'
     }
   ],
   COORDS: [
@@ -318,6 +362,21 @@ export const PRODUCT_PRESETS: Record<ProductType, PoseConfig[]> = {
       id: 'coord_6',
       label: 'Full Body Back',
       promptDescription: 'Full Body Back View: Showing the rear view of the entire set.'
+    },
+    {
+      id: 'coord_dutch_angle',
+      label: 'Dutch Angle (Tilted)',
+      promptDescription: 'Dutch Angle Shot: CAMERA: Tilted/canted angle. FOCUS: Dynamic, energetic perspective of the matching set.'
+    },
+    {
+      id: 'coord_over_shoulder',
+      label: 'Over-the-Shoulder',
+      promptDescription: 'Over-the-Shoulder View: CAMERA: Looking over the model\'s shoulder. FOCUS: Back details and side profile of the set.'
+    },
+    {
+      id: 'coord_birds_eye',
+      label: 'Bird\'s-Eye View',
+      promptDescription: 'Bird\'s-Eye View: CAMERA: Top-down directly above the model. FOCUS: Pattern matching and overall set coordination from above.'
     }
   ],
   KURTI: [
@@ -370,6 +429,21 @@ export const PRODUCT_PRESETS: Record<ProductType, PoseConfig[]> = {
       id: 'kurti_7',
       label: 'Graceful Pose',
       promptDescription: 'Full Body Graceful Pose: Elegant standing posture suitable for ethnic wear.'
+    },
+    {
+      id: 'kurti_dutch_angle',
+      label: 'Dutch Angle (Tilted)',
+      promptDescription: 'Dutch Angle Shot: CAMERA: Tilted/canted angle. FOCUS: Dynamic, modern perspective of the traditional kurti.'
+    },
+    {
+      id: 'kurti_over_shoulder',
+      label: 'Over-the-Shoulder',
+      promptDescription: 'Over-the-Shoulder View: CAMERA: Looking over the model\'s shoulder. FOCUS: Back neck design and side profile.'
+    },
+    {
+      id: 'kurti_birds_eye',
+      label: 'Bird\'s-Eye View',
+      promptDescription: 'Bird\'s-Eye View: CAMERA: Top-down directly above the model. FOCUS: Yoke work, dupatta drape, and overall pattern from above.'
     }
   ],
   ACCESSORIES: [
@@ -397,6 +471,16 @@ export const PRODUCT_PRESETS: Record<ProductType, PoseConfig[]> = {
       id: 'acc_3',
       label: 'Flat Lay',
       promptDescription: 'Top-Down Flat Lay: Accessory arranged neatly on a surface. Artistic composition.'
+    },
+    {
+      id: 'acc_dutch_angle',
+      label: 'Dutch Angle (Tilted)',
+      promptDescription: 'Dutch Angle Shot: CAMERA: Tilted/canted angle. FOCUS: Dynamic, edgy perspective of the accessory.'
+    },
+    {
+      id: 'acc_birds_eye',
+      label: 'Bird\'s-Eye View',
+      promptDescription: 'Bird\'s-Eye View: CAMERA: Top-down directly above the accessory. FOCUS: Overall shape and top details.'
     }
   ],
   FOOTWEAR: [
@@ -429,6 +513,16 @@ export const PRODUCT_PRESETS: Record<ProductType, PoseConfig[]> = {
       id: 'shoe_4',
       label: 'Dynamic Step',
       promptDescription: 'Action Shot: Model taking a step, showing the shoe in motion and sole flexibility.'
+    },
+    {
+      id: 'shoe_dutch_angle',
+      label: 'Dutch Angle (Tilted)',
+      promptDescription: 'Dutch Angle Shot: CAMERA: Tilted/canted angle. FOCUS: Dynamic, energetic perspective of the shoe.'
+    },
+    {
+      id: 'shoe_birds_eye',
+      label: 'Bird\'s-Eye View',
+      promptDescription: 'Bird\'s-Eye View: CAMERA: Top-down directly above the shoe. FOCUS: Toe box, vamp, and top design.'
     }
   ]
 };

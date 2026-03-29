@@ -36,7 +36,7 @@ const App: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   
   // Tier Selection State
-  const [selectedTier, setSelectedTier] = useState<ModelTier>('FREE');
+  const [selectedTier, setSelectedTier] = useState<ModelTier>('FLASH');
 
   // Initial Check for API Key & Load History
   useEffect(() => {
@@ -102,7 +102,8 @@ const App: React.FC = () => {
     partyBackground?: PartyBackgroundType,
     fabricEmphasis?: FabricEmphasisType,
     lightingStyle?: LightingStyle,
-    aspectRatio?: AspectRatio
+    aspectRatio?: AspectRatio,
+    propStyle?: import('./types').PropStyle
   ) => {
     setReferenceImages(base64Array);
     setState(AppState.GENERATING);
@@ -123,7 +124,8 @@ const App: React.FC = () => {
         fabricEmphasis,
         selectedTier,
         lightingStyle,
-        aspectRatio
+        aspectRatio,
+        propStyle
       );
       
       if (results.length === 0) {
@@ -141,6 +143,7 @@ const App: React.FC = () => {
         fabricEmphasis: fabricEmphasis,
         lightingStyle: lightingStyle,
         aspectRatio: aspectRatio,
+        propStyle: propStyle,
         results: results
       };
 

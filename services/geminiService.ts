@@ -94,9 +94,10 @@ export const generatePhotoshoot = async (
   onProgress: (completed: number, total: number, task: string) => void,
   partyBackground?: PartyBackgroundType,
   fabricEmphasis?: FabricEmphasisType,
-  tier: ModelTier = 'FREE',
+  tier: ModelTier = 'FLASH',
   lightingStyle?: LightingStyle,
-  aspectRatio: AspectRatio = '3:4'
+  aspectRatio: AspectRatio = '3:4',
+  propStyle?: import('../types').PropStyle
 ): Promise<GeneratedImage[]> => {
   
   // 2. Select Model & Key
@@ -105,11 +106,11 @@ export const generatePhotoshoot = async (
   let activeModel = 'gemini-3.1-flash-image-preview';
 
   if (tier === 'PRO') {
-    activeModel = 'gemini-3.1-pro-preview'; 
+    activeModel = 'gemini-3-pro-image-preview'; 
     console.log(`[Lumière] Using High-Fidelity Model (Pro): ${activeModel}`);
   } else {
     // gemini-3.1-flash-image-preview is the default for general image tasks
-    console.log(`[Lumière] Using Standard Model (Free): ${activeModel}`);
+    console.log(`[Lumière] Using Standard Model (Flash): ${activeModel}`);
   }
 
   // 3. Initialize Client
@@ -163,6 +164,46 @@ export const generatePhotoshoot = async (
     };
   });
 
+  let propPrompt = "";
+  if (propStyle === 'AI_AUTO') {
+      onProgress(0, poses.length, "AI is analyzing outfit to select props...");
+      try {
+        const textAi = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const propSelectionResponse = await retryOperation(async () => {
+          return await textAi.models.generateContent({
+            model: 'gemini-3.1-flash-preview',
+            contents: {
+              parts: [
+                { text: "You are a fashion stylist. Analyze this outfit and choose 1 or 2 props that would perfectly complement it for a photoshoot. Choose ONLY from this exact list: CHAIR, HANDBAG, SUNGLASSES, WATCH, FLOWER, PLANTS, COFFEE_CUP, BOOKS. Return your selection as a comma-separated list of the exact words, with no other text." },
+                referenceParts[0]
+              ]
+            }
+          });
+        });
+        const selectedPropsText = propSelectionResponse.text || "";
+        const availableProps = ['CHAIR', 'HANDBAG', 'SUNGLASSES', 'WATCH', 'FLOWER', 'PLANTS', 'COFFEE_CUP', 'BOOKS'];
+        const chosenProps = availableProps.filter(p => selectedPropsText.includes(p));
+        
+        if (chosenProps.length > 0) {
+          const constants = await import('../constants');
+          propPrompt = chosenProps.map(p => constants.PROP_STYLES[p as import('../types').PropStyle]).join(" ");
+          console.log(`[Lumière] AI Auto selected props: ${chosenProps.join(', ')}`);
+        } else {
+          const randomProp = availableProps[Math.floor(Math.random() * availableProps.length)];
+          const constants = await import('../constants');
+          propPrompt = constants.PROP_STYLES[randomProp as import('../types').PropStyle];
+          console.log(`[Lumière] AI Auto fallback prop: ${randomProp}`);
+        }
+      } catch (e) {
+        console.error("Failed to auto-select props", e);
+        const constants = await import('../constants');
+        propPrompt = constants.PROP_STYLES['HANDBAG'];
+      }
+  } else if (propStyle && propStyle !== 'NONE') {
+      const constants = await import('../constants');
+      propPrompt = constants.PROP_STYLES[propStyle];
+  }
+
   // 4. Loop with Tier Specific Logic
   for (const pose of poses) {
      onProgress(completedCount, poses.length, `Generating ${pose.label}...`);
@@ -174,7 +215,7 @@ export const generatePhotoshoot = async (
            contents: {
              parts: [
                {
-                 text: `${SYSTEM_INSTRUCTION}\n\n${backgroundPrompt}\n\n${stylePrompt}\n\n${lightingPrompt}\n\n${fabricPrompt}\n\nGENERATE THIS SPECIFIC SHOT:\n${pose.promptDescription}\n\nUse ALL provided reference images to ensure the person and clothing are IDENTICAL.`
+                 text: `${SYSTEM_INSTRUCTION}\n\n${backgroundPrompt}\n\n${stylePrompt}\n\n${lightingPrompt}\n\n${fabricPrompt}\n\n${propPrompt}\n\nGENERATE THIS SPECIFIC SHOT:\n${pose.promptDescription}\n\nUse ALL provided reference images to ensure the person and clothing are IDENTICAL.`
                },
                ...referenceParts
              ]

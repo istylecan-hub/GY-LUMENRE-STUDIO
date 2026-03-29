@@ -44,24 +44,24 @@ export const Header: React.FC<HeaderProps> = ({
           )}
           
           <button 
-            onClick={() => onToggleTier(selectedTier === 'PRO' ? 'FREE' : 'PRO')}
+            onClick={() => onToggleTier(selectedTier === 'PRO' ? 'FLASH' : 'PRO')}
             className={`
               flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300 text-xs font-bold uppercase tracking-wide
               ${selectedTier === 'PRO' 
                 ? 'bg-yellow-900/30 border-yellow-700/50 text-yellow-500 hover:bg-yellow-900/50 shadow-[0_0_15px_rgba(234,179,8,0.2)]' 
                 : 'bg-emerald-900/30 border-emerald-700/50 text-emerald-400 hover:bg-emerald-900/50 shadow-[0_0_15px_rgba(52,211,153,0.2)]'}
             `}
-            title={`Switch to ${selectedTier === 'PRO' ? 'Free' : 'Pro'} Model`}
+            title={`Switch to ${selectedTier === 'PRO' ? 'Flash' : 'Pro'} Model`}
           >
             {selectedTier === 'PRO' ? (
               <>
                 <Zap className="w-3 h-3 fill-current" />
-                <span>⚡ Gemini 3.1 Pro (Paid)</span>
+                <span>⚡ PRO 3.1 PRO</span>
               </>
             ) : (
               <>
                 <Rocket className="w-3 h-3" />
-                <span>🚀 Flash 3.1 (Free)</span>
+                <span>🚀 3.1 FLASH IMAGE</span>
               </>
             )}
           </button>
